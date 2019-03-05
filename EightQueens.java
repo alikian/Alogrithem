@@ -2,6 +2,8 @@ package com.backtrack;
 
 import java.math.*;
 
+// Can solve it with 876 check move
+
 public class EightQueens {
     int board[][] = new int[8][8];
     int moveCount = 0;
