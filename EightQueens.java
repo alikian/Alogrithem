@@ -59,17 +59,21 @@ public class EightQueens {
         moveCount++;
         colMoveCount[col]++;
 
+        // Check row 
         for (int colIndex = 0; colIndex < col; colIndex++) {
             if (board[row][colIndex] == 1) {
                 return false;
             }
         }
 
+        // Check diagnoly downward
         for (int rowIndex = Math.max(row - col, 0), colIndex = Math.max(col - row, 0); rowIndex < row && colIndex < col; rowIndex++, colIndex++) {
             if (board[rowIndex][colIndex] == 1) {
                 return false;
             }
         }
+        
+        // Check diagnoly upward
         for (int rowIndex = Math.min(row + col, 7), colIndex = Math.max(col - (7 - row), 0); rowIndex > 0 && colIndex < col; rowIndex--, colIndex++) {
             if (board[rowIndex][colIndex] == 1) {
                 return false;
@@ -88,6 +92,5 @@ public class EightQueens {
         }
         System.out.println();
     }
-
 
 }
