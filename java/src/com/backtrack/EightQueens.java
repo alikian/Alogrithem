@@ -1,4 +1,4 @@
-package java.src.com.backtrack;
+package com.backtrack;
 
 // Can solve it with 876 check move
 
