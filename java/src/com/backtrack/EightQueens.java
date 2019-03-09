@@ -1,6 +1,4 @@
-package com.backtrack;
-
-import java.math.*;
+package java.src.com.backtrack;
 
 // Can solve it with 876 check move
 
