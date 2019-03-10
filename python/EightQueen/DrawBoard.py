@@ -2,7 +2,7 @@ import turtle
 
 turtle.speed(-1)
 
-width = 90
+width = 60
 
 
 def draw_squre(x, y):
@@ -43,17 +43,11 @@ def draw_queen(row, col, erase):
     turtle.pensize(4)
 
     if erase:
-        if index % 2 == 0:
-            turtle.pencolor('black')
-
         if index % 2 == 1:
             turtle.pencolor('white')
     else:
         if index % 2 == 0:
             turtle.pencolor('white')
-
-        if index % 2 == 1:
-            turtle.pencolor('black')
 
     turtle.up()
     rad = width / 3

@@ -22,12 +22,6 @@ def isSafe(row, col):
     if checking_display:
         DrawBoard.draw_queen(row, col, False)
 
-    # counter += 1
-    # sleep = .3
-    # if counter > 50:
-    #     sleep = 0
-    # time.sleep(sleep)
-
     for colIndex in range(0, col):
         if board[row][colIndex]:
             if checking_display:
