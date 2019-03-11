@@ -46,6 +46,8 @@ def draw_queen(row, col, erase):
 
     turtle.pencolor('black')
     turtle.pensize(4)
+    if erase:
+        turtle.pensize(6)
 
     if erase:
         if index % 2 == 1:
