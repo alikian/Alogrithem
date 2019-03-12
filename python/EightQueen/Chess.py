@@ -1,5 +1,6 @@
 import tkinter
 import time
+import threading
 
 
 class Chess:
@@ -13,10 +14,14 @@ class Chess:
         self.canvas.pack()
         self.board = [[0 for i in range(8)] for j in range(8)]
         self.counter = 0
-        self.board[0][0] = 1
+        self.board[1][0] = 1
+        tkinter.Button(self.window, text="Solve", command=self.solve).pack()
+
+    def solve(self):
+        thread= ThreadedTask(self)
+        thread.start()
 
     def isSafe(self, row, col):
-
         for colIndex in range(0, col):
             if self.board[row][colIndex]:
                 return False
@@ -40,9 +45,8 @@ class Chess:
         return True
 
     def solve_board(self, col):
-
+        time.sleep(.2)
         for row in range(8):
-            # time.sleep(1)
             if self.isSafe(row, col):
                 self.board[row][col] = 1
                 queen = self.draw_queen(row, col)
@@ -89,9 +93,14 @@ class Chess:
     def start(self):
         self.window.mainloop()
 
+class ThreadedTask(threading.Thread):
+    def __init__(self, chess):
+        threading.Thread.__init__(self)
+        self.chess = chess
+    def run(self):
+        self.chess.solve_board(0)
 
 width = 70
 chess = Chess(width, width, width)
 chess.draw_board()
-chess.solve_board(0)
 chess.start()

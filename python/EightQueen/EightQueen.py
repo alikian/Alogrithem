@@ -11,11 +11,6 @@ board = [[0 for i in range(8)] for j in range(8)]
 checking_display = False
 
 
-def init():
-    global board
-    print("init", board[1][1])
-
-
 def isSafe(row, col):
     global board, counter
 
@@ -80,9 +75,8 @@ def solveBoard(col):
 
 DrawBoard.draw_board()
 
-init()
-board[1][0] = 1
-DrawBoard.draw_queen(1, 0, False)
+board[0][0] = 1
+DrawBoard.draw_queen(0, 0, False)
 
 solveBoard(1)
 
