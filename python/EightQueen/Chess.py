@@ -10,15 +10,19 @@ class Chess:
         self.canvas = tkinter.Canvas(self.window, width=self.width * 10, height=self.width * 10)
         self.xRef = x_ref
         self.yRef = y_ref
-        self.window.title("Chess")
+        self.window.title("Eight Queen")
         self.canvas.pack()
-        self.board = [[0 for i in range(8)] for j in range(8)]
+        self.board = None
         self.counter = 0
-        self.board[1][0] = 1
         tkinter.Button(self.window, text="Solve", command=self.solve).pack()
 
+    def reset(self):
+        self.board = [[0 for i in range(8)] for j in range(8)]
+        self.board[1][0] = 1
+
     def solve(self):
-        thread= ThreadedTask(self)
+        self.reset()
+        thread = ThreadedTask(self)
         thread.start()
 
     def isSafe(self, row, col):
