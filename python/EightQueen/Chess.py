@@ -17,8 +17,10 @@ class Chess:
         tkinter.Button(self.window, text="Solve", command=self.solve).pack()
 
     def reset(self):
+        self.draw_board()
         self.board = [[0 for i in range(8)] for j in range(8)]
-        self.board[1][0] = 1
+        self.board[0][0] = 1
+        self.draw_queen(0, 0)
 
     def solve(self):
         self.reset()
@@ -49,7 +51,7 @@ class Chess:
         return True
 
     def solve_board(self, col):
-        time.sleep(.2)
+        time.sleep(.1)
         for row in range(8):
             if self.isSafe(row, col):
                 self.board[row][col] = 1
@@ -65,6 +67,8 @@ class Chess:
         return False
 
     def draw_board(self):
+        self.canvas.create_rectangle(self.xRef, self.yRef, self.xRef + self.width * 8, self.yRef + width * 8,
+                                     fill="white")
         for row in range(9):
             self.canvas.create_line(row * self.width + self.xRef, 0 + self.yRef, row * self.width + self.xRef,
                                     self.width * 8 + self.yRef)
@@ -97,12 +101,15 @@ class Chess:
     def start(self):
         self.window.mainloop()
 
+
 class ThreadedTask(threading.Thread):
     def __init__(self, chess):
         threading.Thread.__init__(self)
         self.chess = chess
+
     def run(self):
-        self.chess.solve_board(0)
+        self.chess.solve_board(1)
+
 
 width = 70
 chess = Chess(width, width, width)
