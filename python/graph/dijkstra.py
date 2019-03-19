@@ -41,7 +41,7 @@ class Graph:
         self.circle(vertex.x, vertex.y, Graph.rad, color)
         self.canvas.create_text(vertex.x, vertex.y, font="Purisa", text=vertex.name)
         if vertex.dist != sys.maxsize:
-            self.canvas.create_text(vertex.x + Graph.rad, vertex.y - Graph.rad, font="Purisa", text=str(vertex.dist))
+            self.canvas.create_text(vertex.x + Graph.rad, vertex.y - Graph.rad*2, font="Purisa", text=str(vertex.dist))
 
     def circle(self, x, y, r, color):
         return self.canvas.create_oval(x - r, y - r, x + r, y + r, fill=color)
