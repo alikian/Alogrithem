@@ -13,6 +13,7 @@ class Vertex:
         self.edges = {}
         self.visited = False
         self.dist = sys.maxsize
+        self.is_in_path = False
 
     def connect(self, name, dist):
         self.edges[name] = dist
@@ -28,20 +29,28 @@ class Graph:
         self.canvas = tkinter.Canvas(self.window, width=self.width, height=self.length)
         self.canvas.pack()
         self.vertices = {}
+        tkinter.Button(self.window, text="Solve", command=self.solve).pack()
 
     def add_vertex(self, name, x, y):
         vertex = Vertex(name, x, y)
         self.vertices[name] = vertex
         self.draw_vertex(vertex)
 
+    def solve(self):
+        thread = ThreadedTask(self)
+        thread.start()
+
     def draw_vertex(self, vertex):
         color = "green"
         if vertex.visited:
             color = "red"
+        if vertex.is_in_path:
+            color = "blue"
         self.circle(vertex.x, vertex.y, Graph.rad, color)
         self.canvas.create_text(vertex.x, vertex.y, font="Purisa", text=vertex.name)
         if vertex.dist != sys.maxsize:
-            self.canvas.create_text(vertex.x + Graph.rad, vertex.y - Graph.rad*2, font="Purisa", text=str(vertex.dist))
+            self.canvas.create_text(vertex.x + Graph.rad, vertex.y - Graph.rad * 2, font="Purisa",
+                                    text=str(vertex.dist))
 
     def circle(self, x, y, r, color):
         return self.canvas.create_oval(x - r, y - r, x + r, y + r, fill=color)
@@ -53,13 +62,21 @@ class Graph:
         vertex_a.connect(vertex_b.name, distance)
         vertex_b.connect(vertex_a.name, distance)
         self.canvas.create_line(vertex_a.x, vertex_a.y, vertex_b.x, vertex_b.y)
-        self.canvas.create_text((vertex_a.x+vertex_b.x)/2, (vertex_a.y+vertex_b.y)/2, font="Purisa", text=str(distance))
+        self.canvas.create_text((vertex_a.x + vertex_b.x) / 2, (vertex_a.y + vertex_b.y) / 2, font="Purisa",
+                                text=str(distance))
         self.draw_vertex(vertex_a)
         self.draw_vertex(vertex_b)
 
     def start(self):
         self.window.mainloop()
 
+    def find_parent(self, vertex):
+
+        for name, dist in vertex.edges.items():
+            if vertex.dist == self.vertices[name].dist + dist:
+                return self.vertices[name]
+
+        return None
 
     def min_distance(self, vertex):
 
@@ -68,6 +85,8 @@ class Graph:
 
         for name, dist in vertex.edges.items():
             if not self.vertices[name].visited:
+                time.sleep(.4)
+                self.draw_vertex(self.vertices[name])
                 if self.vertices[name].dist > dist + vertex.dist:
                     self.vertices[name].dist = dist + vertex.dist
                 if self.vertices[name].dist < min_dist:
@@ -86,6 +105,7 @@ class Graph:
         while checking_vertex.name != name_dest:
             vertex = self.min_distance(checking_vertex)
             print("vertex: " + checking_vertex.name)
+            time.sleep(.2)
             checking_vertex.visited = True
             self.draw_vertex(checking_vertex)
             checking_vertex = vertex
@@ -94,6 +114,26 @@ class Graph:
         print("vertex: " + checking_vertex.name)
         self.draw_vertex(checking_vertex)
 
+        checking_vertex.is_in_path = True
+        self.draw_vertex(vertex)
+        path = checking_vertex.name
+        while checking_vertex.name != name_src:
+            vertex = self.find_parent(checking_vertex)
+            path = vertex.name + ", " + path
+            vertex.is_in_path = True
+            self.draw_vertex(vertex)
+            print("vertex: " + checking_vertex.name + " parent is: " + vertex.name)
+            checking_vertex = vertex
+
+        print(path)
+
+class ThreadedTask(threading.Thread):
+    def __init__(self, graph):
+        threading.Thread.__init__(self)
+        self.graph = graph
+
+    def run(self):
+        self.graph.dijkstra("a", "z")
 
 
 g = Graph(500, 800)
@@ -127,7 +167,8 @@ g.connect_vertices("d", "e")
 g.connect_vertices("e", "f")
 g.connect_vertices("f", "z")
 g.connect_vertices("h", "z")
+g.connect_vertices("e", "i")
 
-g.dijkstra("a", "z")
+
 
 g.start()
