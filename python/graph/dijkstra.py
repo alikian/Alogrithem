@@ -12,6 +12,7 @@ class Vertex:
         self.y = y
         self.edges = {}
         self.visited = False
+        self.visiting = False
         self.dist = sys.maxsize
         self.parent = None
         self.is_in_path = False
@@ -45,10 +46,12 @@ class Graph:
 
     def draw_vertex(self, vertex):
         color = "green"
-        if vertex.checking:
-            color = "yellow"
         if vertex.visited:
             color = "red"
+        if vertex.visiting:
+            color = "orange"
+        if vertex.checking:
+            color = "yellow"
         if vertex.is_in_path:
             color = "blue"
         self.circle(vertex.x, vertex.y, Graph.rad, color)
@@ -69,8 +72,8 @@ class Graph:
         vertex_a.connect(vertex_b.name, distance)
         vertex_b.connect(vertex_a.name, distance)
         self.canvas.create_line(vertex_a.x, vertex_a.y, vertex_b.x, vertex_b.y)
-        self.canvas.create_text((vertex_a.x + vertex_b.x) / 2, (vertex_a.y + vertex_b.y) / 2, font="Purisa",
-                                text=str(distance))
+        # self.canvas.create_text((vertex_a.x + vertex_b.x) / 2, (vertex_a.y + vertex_b.y) / 2, font="Purisa",
+        #                         text=str(distance))
         self.draw_vertex(vertex_a)
         self.draw_vertex(vertex_b)
 
@@ -85,15 +88,8 @@ class Graph:
         for name, vertex in self.vertices.items():
             if not vertex.visited:
                 if vertex.dist < min_dist:
-                    vertex.checking = True
-                    self.draw_vertex(vertex)
-                    time.sleep(.4)
-
                     min_name = name
                     min_dist = vertex.dist
-
-                    vertex.checking = False
-                    self.draw_vertex(vertex)
 
         return self.vertices[min_name]
 
@@ -104,15 +100,26 @@ class Graph:
         for count in range(0, len(self.vertices) - 1):
             vertex = self.min_distance()
             vertex.visited = True
+            vertex.visiting = True
             time.sleep(.4)
             self.draw_vertex(vertex)
 
             for name, dist in vertex.edges.items():
                 n_vertex = self.vertices[name]
                 if not n_vertex.visited and n_vertex.dist > dist + vertex.dist:
+                    n_vertex.checking = True
+
                     n_vertex.dist = dist + vertex.dist
                     n_vertex.parent = vertex
+
                     self.draw_vertex(n_vertex)
+                    time.sleep(1)
+                    n_vertex.checking = False
+                    self.draw_vertex(n_vertex)
+
+            vertex.visiting = False
+            self.draw_vertex(vertex)
+
 
         vertex = self.vertices[name_dest]
         while vertex.name != name_src:
@@ -146,6 +153,8 @@ g.add_vertex("h", 600, 400)
 g.add_vertex("i", 500, 420)
 g.add_vertex("j", 450, 320)
 g.add_vertex("k", 550, 220)
+g.add_vertex("l", 220, 220)
+g.add_vertex("m", 320, 100)
 
 g.add_vertex("z", 750, 440)
 
@@ -170,6 +179,10 @@ g.connect_vertices("e", "f")
 g.connect_vertices("f", "z")
 g.connect_vertices("h", "z")
 g.connect_vertices("e", "j")
+g.connect_vertices("a", "l")
+g.connect_vertices("l", "j")
+g.connect_vertices("a", "m")
+g.connect_vertices("m", "j")
 
 
 g.start()
