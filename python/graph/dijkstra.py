@@ -14,6 +14,7 @@ class Vertex:
         self.visited = False
         self.dist = sys.maxsize
         self.is_in_path = False
+        self.dist_text = None
 
     def connect(self, name, dist):
         self.edges[name] = dist
@@ -49,7 +50,9 @@ class Graph:
         self.circle(vertex.x, vertex.y, Graph.rad, color)
         self.canvas.create_text(vertex.x, vertex.y, font="Purisa", text=vertex.name)
         if vertex.dist != sys.maxsize:
-            self.canvas.create_text(vertex.x + Graph.rad, vertex.y - Graph.rad * 2, font="Purisa",
+            if vertex.dist_text is not None:
+                self.canvas.delete(vertex.dist_text)
+            vertex.dist_text = self.canvas.create_text(vertex.x + Graph.rad, vertex.y - Graph.rad * 2, font="Purisa",
                                     text=str(vertex.dist))
 
     def circle(self, x, y, r, color):
@@ -85,13 +88,13 @@ class Graph:
 
         for name, dist in vertex.edges.items():
             if not self.vertices[name].visited:
-                time.sleep(.4)
-                self.draw_vertex(self.vertices[name])
+                time.sleep(.5)
                 if self.vertices[name].dist > dist + vertex.dist:
                     self.vertices[name].dist = dist + vertex.dist
                 if self.vertices[name].dist < min_dist:
                     min_name = name
                     min_dist = self.vertices[name].dist
+                self.draw_vertex(self.vertices[name])
 
         vertex.next = min_name
 
@@ -141,13 +144,13 @@ g = Graph(500, 800)
 g.add_vertex("a", 120, 50)
 g.add_vertex("b", 100, 300)
 g.add_vertex("c", 200, 100)
-g.add_vertex("d", 300, 120)
-g.add_vertex("e", 400, 140)
+g.add_vertex("d", 300, 30)
+g.add_vertex("e", 400, 40)
 g.add_vertex("f", 700, 100)
 g.add_vertex("h", 600, 400)
 g.add_vertex("i", 500, 420)
-g.add_vertex("j", 250, 250)
-g.add_vertex("k", 550, 220)
+g.add_vertex("j", 450, 250)
+g.add_vertex("k", 550, 320)
 
 g.add_vertex("z", 750, 440)
 
@@ -167,7 +170,7 @@ g.connect_vertices("d", "e")
 g.connect_vertices("e", "f")
 g.connect_vertices("f", "z")
 g.connect_vertices("h", "z")
-g.connect_vertices("e", "i")
+# g.connect_vertices("e", "i")
 
 
 
