@@ -12,12 +12,9 @@ class Vertex:
         self.y = y
         self.edges = {}
         self.visited = False
-        self.visiting = False
         self.dist = sys.maxsize
         self.parent = None
-        self.is_in_path = False
         self.dist_text = None
-        self.checking= False
 
     def connect(self, name, dist):
         self.edges[name] = dist
@@ -44,16 +41,11 @@ class Graph:
         thread = ThreadedTask(self)
         thread.start()
 
-    def draw_vertex(self, vertex):
-        color = "green"
-        if vertex.visited:
-            color = "red"
-        if vertex.visiting:
-            color = "orange"
-        if vertex.checking:
-            color = "yellow"
-        if vertex.is_in_path:
-            color = "blue"
+    def draw_vertex(self, vertex, color="green"):
+
+        if color == "green":
+            if vertex.visited:
+                color = "red"
         self.circle(vertex.x, vertex.y, Graph.rad, color)
         self.canvas.create_text(vertex.x, vertex.y, font="Purisa", text=vertex.name)
         if vertex.dist != sys.maxsize:
@@ -100,36 +92,28 @@ class Graph:
         for count in range(0, len(self.vertices) - 1):
             vertex = self.min_distance()
             vertex.visited = True
-            vertex.visiting = True
             time.sleep(.4)
-            self.draw_vertex(vertex)
+            self.draw_vertex(vertex, "orange")
 
             for name, dist in vertex.edges.items():
                 n_vertex = self.vertices[name]
                 if not n_vertex.visited and n_vertex.dist > dist + vertex.dist:
-                    n_vertex.checking = True
-
                     n_vertex.dist = dist + vertex.dist
                     n_vertex.parent = vertex
 
-                    self.draw_vertex(n_vertex)
+                    self.draw_vertex(n_vertex, "yellow")
                     time.sleep(1)
-                    n_vertex.checking = False
                     self.draw_vertex(n_vertex)
 
             vertex.visiting = False
             self.draw_vertex(vertex)
 
-
         vertex = self.vertices[name_dest]
         while vertex.name != name_src:
-            vertex.is_in_path = True
-            self.draw_vertex(vertex)
+            self.draw_vertex(vertex, "blue")
             vertex = vertex.parent
 
-        vertex.is_in_path = True
-        self.draw_vertex(vertex)
-
+        self.draw_vertex(vertex, "blue")
 
 
 class ThreadedTask(threading.Thread):
@@ -183,6 +167,5 @@ g.connect_vertices("a", "l")
 g.connect_vertices("l", "j")
 g.connect_vertices("a", "m")
 g.connect_vertices("m", "j")
-
 
 g.start()
