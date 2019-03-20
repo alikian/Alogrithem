@@ -13,8 +13,10 @@ class Vertex:
         self.edges = {}
         self.visited = False
         self.dist = sys.maxsize
+        self.parent = None
         self.is_in_path = False
         self.dist_text = None
+        self.checking= False
 
     def connect(self, name, dist):
         self.edges[name] = dist
@@ -43,6 +45,8 @@ class Graph:
 
     def draw_vertex(self, vertex):
         color = "green"
+        if vertex.checking:
+            color = "yellow"
         if vertex.visited:
             color = "red"
         if vertex.is_in_path:
@@ -53,7 +57,7 @@ class Graph:
             if vertex.dist_text is not None:
                 self.canvas.delete(vertex.dist_text)
             vertex.dist_text = self.canvas.create_text(vertex.x + Graph.rad, vertex.y - Graph.rad * 2, font="Purisa",
-                                    text=str(vertex.dist))
+                                                       text=str(vertex.dist))
 
     def circle(self, x, y, r, color):
         return self.canvas.create_oval(x - r, y - r, x + r, y + r, fill=color)
@@ -73,62 +77,53 @@ class Graph:
     def start(self):
         self.window.mainloop()
 
-    def find_parent(self, vertex):
-
-        for name, dist in vertex.edges.items():
-            if vertex.dist == self.vertices[name].dist + dist:
-                return self.vertices[name]
-
-        return None
-
-    def min_distance(self, vertex):
+    def min_distance(self):
 
         min_name = ""
         min_dist = sys.maxsize
 
-        for name, dist in vertex.edges.items():
-            if not self.vertices[name].visited:
-                time.sleep(.5)
-                if self.vertices[name].dist > dist + vertex.dist:
-                    self.vertices[name].dist = dist + vertex.dist
-                if self.vertices[name].dist < min_dist:
-                    min_name = name
-                    min_dist = self.vertices[name].dist
-                self.draw_vertex(self.vertices[name])
+        for name, vertex in self.vertices.items():
+            if not vertex.visited:
+                if vertex.dist < min_dist:
+                    vertex.checking = True
+                    self.draw_vertex(vertex)
+                    time.sleep(.4)
 
-        vertex.next = min_name
+                    min_name = name
+                    min_dist = vertex.dist
+
+                    vertex.checking = False
+                    self.draw_vertex(vertex)
 
         return self.vertices[min_name]
 
     def dijkstra(self, name_src, name_dest):
         src_vertex = self.vertices[name_src]
         src_vertex.dist = 0
-        checking_vertex = src_vertex
 
-        while checking_vertex.name != name_dest:
-            vertex = self.min_distance(checking_vertex)
-            print("vertex: " + checking_vertex.name)
-            time.sleep(.2)
-            checking_vertex.visited = True
-            self.draw_vertex(checking_vertex)
-            checking_vertex = vertex
+        for count in range(0, len(self.vertices) - 1):
+            vertex = self.min_distance()
+            vertex.visited = True
+            time.sleep(.4)
+            self.draw_vertex(vertex)
 
-        checking_vertex.visited = True
-        print("vertex: " + checking_vertex.name)
-        self.draw_vertex(checking_vertex)
+            for name, dist in vertex.edges.items():
+                n_vertex = self.vertices[name]
+                if not n_vertex.visited and n_vertex.dist > dist + vertex.dist:
+                    n_vertex.dist = dist + vertex.dist
+                    n_vertex.parent = vertex
+                    self.draw_vertex(n_vertex)
 
-        checking_vertex.is_in_path = True
-        self.draw_vertex(vertex)
-        path = checking_vertex.name
-        while checking_vertex.name != name_src:
-            vertex = self.find_parent(checking_vertex)
-            path = vertex.name + ", " + path
+        vertex = self.vertices[name_dest]
+        while vertex.name != name_src:
             vertex.is_in_path = True
             self.draw_vertex(vertex)
-            print("vertex: " + checking_vertex.name + " parent is: " + vertex.name)
-            checking_vertex = vertex
+            vertex = vertex.parent
 
-        print(path)
+        vertex.is_in_path = True
+        self.draw_vertex(vertex)
+
+
 
 class ThreadedTask(threading.Thread):
     def __init__(self, graph):
@@ -144,24 +139,28 @@ g = Graph(500, 800)
 g.add_vertex("a", 120, 50)
 g.add_vertex("b", 100, 300)
 g.add_vertex("c", 200, 100)
-g.add_vertex("d", 300, 30)
+g.add_vertex("d", 300, 50)
 g.add_vertex("e", 400, 40)
 g.add_vertex("f", 700, 100)
 g.add_vertex("h", 600, 400)
 g.add_vertex("i", 500, 420)
-g.add_vertex("j", 450, 250)
-g.add_vertex("k", 550, 320)
+g.add_vertex("j", 450, 320)
+g.add_vertex("k", 550, 220)
 
 g.add_vertex("z", 750, 440)
 
 g.connect_vertices("a", "b")
+g.connect_vertices("a", "d")
+g.connect_vertices("c", "b")
 g.connect_vertices("a", "c")
 g.connect_vertices("c", "d")
 g.connect_vertices("b", "i")
 g.connect_vertices("i", "h")
 g.connect_vertices("c", "j")
+g.connect_vertices("c", "k")
 g.connect_vertices("b", "j")
 g.connect_vertices("j", "k")
+g.connect_vertices("j", "h")
 g.connect_vertices("k", "h")
 g.connect_vertices("k", "f")
 g.connect_vertices("k", "z")
@@ -170,8 +169,7 @@ g.connect_vertices("d", "e")
 g.connect_vertices("e", "f")
 g.connect_vertices("f", "z")
 g.connect_vertices("h", "z")
-# g.connect_vertices("e", "i")
-
+g.connect_vertices("e", "j")
 
 
 g.start()
