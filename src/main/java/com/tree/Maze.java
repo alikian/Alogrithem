@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.TimeUnit;
 
 import com.tree.Maze.Cell.Type;
 
@@ -57,7 +58,7 @@ public class Maze {
         }
     }
 
-    public void print(int delay) {
+    public void print(int delay) throws InterruptedException {
         System.out.print("\033[H\033[2J");
         System.out.flush();
         System.out.println();
@@ -88,11 +89,7 @@ public class Maze {
                 }
             }
         }
-        try {
-            Thread.sleep(delay);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        TimeUnit.MILLISECONDS.sleep(delay);
         System.out.println();
         System.out.println();
 
@@ -115,7 +112,7 @@ public class Maze {
         cells[row][col].type = Type.Wall;
     }
 
-    public List<Cell> solve() {
+    public List<Cell> solve() throws InterruptedException {
         nextToVisit.add(entry);
         while (!nextToVisit.isEmpty()) {
             print(50);
@@ -158,7 +155,7 @@ public class Maze {
         nextToVisit.add(next);
     }
 
-    private List<Cell> backtrace(Cell cell) {
+    private List<Cell> backtrace(Cell cell) throws InterruptedException {
         List<Cell> cellList = new ArrayList<>();
         Cell cur = cell;
         while (cur != null) {
@@ -172,7 +169,7 @@ public class Maze {
         return cellList;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         Maze maze = new Maze(10, 15);
         maze.setEntry(0, 1);
         maze.setExit(9, 14);
@@ -200,11 +197,6 @@ public class Maze {
         maze.addWall(8, 6);
         maze.addWall(8, 7);
         maze.print(10);
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
 
         List<Cell> path = maze.solve();
 
