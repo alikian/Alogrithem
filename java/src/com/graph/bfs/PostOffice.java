@@ -5,10 +5,10 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 
 class PostOffice{
-    int rowCount =10;
+    int rowCount =7;
     int colCount =7;
-    int map[][]=new int[rowCount][colCount];
-    Queue<Node> queue = new ArrayBlockingQueue(1000);
+    int [][] map=new int[rowCount][colCount];
+    Queue<Node> queue = new ArrayBlockingQueue<>(1000);
 
     PostOffice(){
         for (int row = 0; row < rowCount; row++) {
@@ -18,12 +18,13 @@ class PostOffice{
         }
 
         addNode(1,1,0);
+        addNode(1,3,0);
         addNode(3,1,0);
         addNode(1,4,0);
         addNode(4,6,0);
     }
 
-    class Node{
+    static class Node{
         int row;
         int col;
         Node(int row,int col){
@@ -59,7 +60,7 @@ class PostOffice{
         }
     }
 
-public static void main(String args[]){
+public static void main(String[] args){
         PostOffice postOffice= new PostOffice();
 
         postOffice.findDistance();
